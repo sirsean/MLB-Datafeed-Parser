@@ -1,5 +1,6 @@
 require 'rexml/document'
 require 'net/http'
+require 'ftools'
 require 'Date'
 
 class Date
@@ -21,7 +22,7 @@ class Date
 end
 
 def download_file(remote_filename)
-    local_filename = "downloads/" + remote_filename.split("/")[-2] + ".xml"
+    local_filename = "boxscores/" + remote_filename.split("/")[-2] + ".xml"
     Net::HTTP.start("gd2.mlb.com"){ |http|
         resp = http.get(remote_filename)
         open(local_filename, "wb"){ |file|
@@ -45,9 +46,12 @@ def get_list_of_remote_filenames_by_date(date)
     return links
 end
 
+# make sure the download directory exists
+File.makedirs("boxscores")
+
 # get the filenames on a particular day
-first = Date.new(2010, 5, 23)
-last = Date.new(2010, 5, 27)
+first = Date.new(2010, 4, 5)
+last = Date.new(2010, 5, 28)
 
 x = first
 while x <= last

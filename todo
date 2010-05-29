@@ -26,3 +26,10 @@ Row 1: Dates
 "Joe Mauer","0.3","0.8"
 "Justin Morneau","0.8","0.9"
 "Delmon Young","0.3",""
+
+Build a Matrix class that can export a CSV file
+matrix.set(row_key, col_key, value)
+matrix.set("Joe Mauer", "2010-05-23", "0.3")
+matrix.write_csv(filename)
+
+The generated graph is really jumbled... makes it look like it's basically all random. Try calculating 10-day moving averages and graphing that instead.

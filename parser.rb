@@ -1,5 +1,6 @@
 require 'rexml/document'
 require 'date'
+require 'grid'
 
 class BatterGameScore
     attr_reader :name, :date
@@ -27,7 +28,12 @@ class BatterGameScore
 
     # (0.72xNIBB + 0.75xHBP + 0.90x1B + 0.92xRBOE + 1.24x2B + 1.56x3B + 1.95xHR) / PA
     def woba
-        (((0.72 * @bb) + (0.75 * @hbp) + (0.90 * @s) + (1.24 * @d) + (1.56 * @t) + (1.95 * @hr)) / (@ab + @bb + @hbp))
+        val = (((0.72 * @bb) + (0.75 * @hbp) + (0.90 * @s) + (1.24 * @d) + (1.56 * @t) + (1.95 * @hr)) / (@ab + @bb + @hbp))
+        if val.nan?
+            return nil
+        else
+            return val
+        end
     end
 end
 
@@ -37,9 +43,10 @@ def parse_date_from_filename(filename)
 end
 
 # get all the files in the downloads directory
-boxscores = Dir.glob("downloads/*.xml")
+boxscores = Dir.glob("boxscores/*.xml")
 
 batter_scores = {}
+grid = Grid.new
 boxscores.each{ |filename|
     date = parse_date_from_filename(filename)
     team_flag = 'home'
@@ -61,6 +68,7 @@ boxscores.each{ |filename|
             batter_scores[batter.name] = []
         end
         batter_scores[batter.name].push(batter)
+        grid.set(batter.name, batter.date, batter.woba)
     }
 }
 
@@ -70,3 +78,6 @@ batter_scores.keys.each{|name|
         puts "#{name}: #{score.date}, wOBA: #{score.woba}"
     }
 }
+
+grid.write_csv("output.csv")
+puts File.read("output.csv")
