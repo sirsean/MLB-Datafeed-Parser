@@ -24,6 +24,7 @@ class BatterGameScore
         @avg = elem.attributes['avg']
 
         @s = (@h - @hr - @t - @d)
+        @tb = @s + 2*@d + 3*@t + 4*@hr
     end
 
     # (0.72xNIBB + 0.75xHBP + 0.90x1B + 0.92xRBOE + 1.24x2B + 1.56x3B + 1.95xHR) / PA
@@ -34,6 +35,15 @@ class BatterGameScore
         else
             return val
         end
+    end
+
+    # ((H+BB)xTB) / (AB+BB)
+    def rc
+        if @ab + @bb == 0
+            return nil
+        end
+        val = 1.0 * ( (@h + @bb) * @tb ) / (@ab + @bb)
+        return val
     end
 end
 
@@ -68,7 +78,7 @@ boxscores.each{ |filename|
             batter_scores[batter.name] = []
         end
         batter_scores[batter.name].push(batter)
-        grid.set(batter.name, batter.date, batter.woba)
+        grid.set(batter.name, batter.date, batter.rc)
     }
 }
 
