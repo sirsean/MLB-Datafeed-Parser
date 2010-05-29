@@ -33,7 +33,7 @@ class Grid
                         row.push(@matrix[row_key][col_key])
                     end
                 }
-                !row.empty?
+                !row.empty? and row.sum > 0
             }.collect{ |row_key|
                 row = [ "\"#{row_key}\"" ]
                 @column_keys.each{ |col_key|

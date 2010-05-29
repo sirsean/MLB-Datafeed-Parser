@@ -2,6 +2,18 @@ require 'rexml/document'
 require 'date'
 require 'grid'
 
+class Array
+    def sum
+        total = 0
+        each{ |i| total += i unless i.nil? }
+        total
+    end
+
+    def average
+        sum / count
+    end
+end
+
 class BatterGameScore
     attr_reader :name, :date
     def initialize(date, elem)
@@ -47,6 +59,35 @@ class BatterGameScore
     end
 end
 
+class Batter
+    attr_reader :name
+    def initialize(name)
+        @name = name
+        @game_scores = []
+        @game_scores_by_date = {}
+    end
+
+    def add_game_score(game_score)
+        @game_scores.push(game_score)
+        @game_scores_by_date[game_score.date] = game_score
+    end
+
+    def dates
+        @game_scores_by_date.keys.sort
+    end
+
+    # get the <days> moving average as of <date>
+    # so if date=2010-05-28 and days=5, you'd get the 5-day moving average as of May 28, or the average of the player's performance on [2010-05-24, 2010-05-25, 2010-05-26, 2010-05-27, 2010-05-28]
+    def get_moving_average_on_date(date, days)
+        date_index = dates.index(date)
+        date_range = dates.reverse[dates.count-1 - date_index, days]
+        rcs = date_range.collect{ |date|
+            @game_scores_by_date[date].rc
+        }
+        rcs.average
+    end
+end
+
 def parse_date_from_filename(filename)
     regex = /.*gid_(\d+)_(\d+)_(\d+)_.*/.match(filename)
     Date.new(regex[1].to_i, regex[2].to_i, regex[3].to_i)
@@ -55,6 +96,7 @@ end
 # get all the files in the downloads directory
 boxscores = Dir.glob("boxscores/*.xml")
 
+batters = {}
 batter_scores = {}
 grid = Grid.new
 boxscores.each{ |filename|
@@ -72,22 +114,35 @@ boxscores.each{ |filename|
     }
     doc.elements.collect("boxscore/batting[@team_flag='#{team_flag}']/batter"){ |elem|
         BatterGameScore.new(date, elem)
-    }.each { |batter|
-        puts "Date: #{batter.date}; Batter: #{batter.name}, wOBA: #{batter.woba}"
-        if not batter_scores[batter.name]
-            batter_scores[batter.name] = []
+    }.each { |game_score|
+        puts "Date: #{game_score.date}; Batter: #{game_score.name}, wOBA: #{game_score.woba}"
+        if not batter_scores[game_score.name]
+            batter_scores[game_score.name] = []
         end
-        batter_scores[batter.name].push(batter)
-        grid.set(batter.name, batter.date, batter.rc)
+        batter_scores[game_score.name].push(game_score)
+        if not batters[game_score.name]
+            batters[game_score.name] = Batter.new(game_score.name)
+        end
+        batters[game_score.name].add_game_score(game_score)
+        grid.set(game_score.name, game_score.date, game_score.rc)
     }
 }
 
-batter_scores.keys.each{|name|
-    scores = batter_scores[name]
-    scores.each{ |score|
-        puts "#{name}: #{score.date}, wOBA: #{score.woba}"
+batters_to_keep = ["Span", "Hudson, O", "Mauer", "Morneau", "Cuddyer", "Kubel", "Thome", "Hardy", "Young, D", "Punto"]
+    
+rc_moving_average_grid = Grid.new
+batters.keys.select{ |key|
+    !batters_to_keep.index(key).nil?
+}.each{ |key|
+    batter = batters[key]
+    puts batter.name
+    batter.dates.each{ |date|
+        rc_moving_average_grid.set(batter.name, date, batter.get_moving_average_on_date(date, 10))
     }
 }
 
 grid.write_csv("output.csv")
 puts File.read("output.csv")
+
+rc_moving_average_grid.write_csv("moving_average.csv")
+puts File.read("moving_average.csv")
