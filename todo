@@ -1,0 +1,28 @@
+
+What do we want the baseball parser to do?
+
+Download all games for a certain team...
+- on a given date
+- before a given date
+- after a given date
+- within a given date range (inclusive)
+
+Be able to determine the last date that was downloaded
+
+Keep parsing totally separate from downloading
+
+- Parse all boxscores at once
+- Parse boxscore for a single day
+- Parse boxscores in a date range
+- Parse all the boxscores for a given year
+
+Record player name, wOBA, date... graph them as lines with wOBA on the Y axis and date on the X axis
+
+Export a CSV file for Google Spreadsheet
+Column A: Names
+Row 1: Dates
+
+"","2010-05-23","2010-05-24"
+"Joe Mauer","0.3","0.8"
+"Justin Morneau","0.8","0.9"
+"Delmon Young","0.3",""
