@@ -1,6 +1,7 @@
 require 'rexml/document'
 require 'date'
 require 'grid'
+require 'ftools'
 
 class Array
     def sum
@@ -141,8 +142,7 @@ batters.keys.select{ |key|
     }
 }
 
-grid.write_csv("output.csv")
-puts File.read("output.csv")
+File.makedirs("output")
 
-rc_moving_average_grid.write_csv("moving_average.csv")
-puts File.read("moving_average.csv")
+rc_moving_average_grid.write_csv("output/moving_average.csv")
+puts File.read("output/moving_average.csv")
