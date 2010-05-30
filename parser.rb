@@ -78,11 +78,11 @@ class Batter
 
     # get the <days> moving average as of <date>
     # so if date=2010-05-28 and days=5, you'd get the 5-day moving average as of May 28, or the average of the player's performance on [2010-05-24, 2010-05-25, 2010-05-26, 2010-05-27, 2010-05-28]
-    def get_moving_average_on_date(date, days)
+    def get_moving_average_on_date(field, date, days)
         date_index = dates.index(date)
         date_range = dates.reverse[dates.count-1 - date_index, days]
         rcs = date_range.collect{ |date|
-            @game_scores_by_date[date].rc
+            @game_scores_by_date[date].send(field)
         }
         rcs.average
     end
@@ -128,7 +128,7 @@ boxscores.each{ |filename|
     }
 }
 
-batters_to_keep = ["Span", "Hudson, O", "Mauer", "Morneau", "Cuddyer", "Kubel", "Thome", "Hardy", "Young, D", "Punto"]
+batters_to_keep = ["Span", "Hudson, O", "Mauer", "Morneau", "Cuddyer", "Hardy", "Young, D", "Punto"]
     
 rc_moving_average_grid = Grid.new
 batters.keys.select{ |key|
@@ -137,7 +137,7 @@ batters.keys.select{ |key|
     batter = batters[key]
     puts batter.name
     batter.dates.each{ |date|
-        rc_moving_average_grid.set(batter.name, date, batter.get_moving_average_on_date(date, 10))
+        rc_moving_average_grid.set(batter.name, date, batter.get_moving_average_on_date('woba', date, 10))
     }
 }
 

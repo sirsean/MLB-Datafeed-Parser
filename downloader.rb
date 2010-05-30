@@ -50,8 +50,8 @@ end
 File.makedirs("boxscores")
 
 # get the filenames on a particular day
-first = Date.new(2010, 4, 5)
-last = Date.new(2010, 5, 28)
+first = Date.new(2010, 5, 29)
+last = Date.new(2010, 5, 29)
 
 x = first
 while x <= last
