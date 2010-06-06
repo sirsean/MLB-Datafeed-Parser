@@ -129,8 +129,8 @@ boxscores.each{ |filename|
     }
 }
 
-batters_to_keep = ["Span", "Hudson, O", "Mauer", "Morneau", "Cuddyer", "Hardy", "Young, D", "Punto"]
-    
+batters_to_keep = ["Span", "Hudson, O", "Mauer", "Morneau", "Cuddyer", "Hardy", "Young, D", "Punto", "Kubel", "Thome"]
+
 rc_moving_average_grid = Grid.new
 batters.keys.select{ |key|
     !batters_to_keep.index(key).nil?

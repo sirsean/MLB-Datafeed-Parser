@@ -40,7 +40,7 @@ class Grid
                     value = @matrix[row_key][col_key]
                     # if they didn't play, set their performance to 0 for the day
                     if value.to_s.empty?
-                        value = 0
+                        value = ""
                     end
                     row.push("\"#{value}\"")
                 }
