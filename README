@@ -1,0 +1,9 @@
+MLB provides an official stat feed, in XML format, located at http://gd2.mlb.com/components/game/mlb/. This is the exact same data used in MLB's own applications, such as the GameDay Flash app and the MLB At Bat application for iPhone/iPad/etc. Thus, the format will probably change slowly if at all, and they should continue to provide it so those apps can use it.
+
+The license says you can use the data for non-commercial, non-bulk purposes. Bear that in mind.
+
+Use downloader.rb to download the boxscore files in a range of dates. You have to edit the file to specify the range. Right now, it only supports the datafeed for Minnesota Twins games.
+
+When that's done, run parser.rb to parse those XML datafiles and generate a CSV file of each Twins player's performance; that performance is measured as the 10-day moving average of their wOBA, which is calculated from the basic boxscore data.
+
+I then upload the CSV to Google Docs to generate a line chart, but you can do whatever you want with it.
