@@ -2,8 +2,18 @@ MLB provides an official stat feed, in XML format, located at http://gd2.mlb.com
 
 The license says you can use the data for non-commercial, non-bulk purposes. Bear that in mind.
 
-Use downloader.rb to download the boxscore files in a range of dates. You have to edit the file to specify the range. Right now, it only supports the datafeed for Minnesota Twins games.
+Download the XML files to your xml/ directory (which will be created automatically, if necessary), like so:
 
-When that's done, run parser.rb to parse those XML datafiles and generate a CSV file of each Twins player's performance; that performance is measured as the 10-day moving average of their wOBA, which is calculated from the basic boxscore data.
+    rake download
+
+It will download every file that you don't already have, for the entire year (including spring training).
+
+Then you can process the XML files, creating a CSV with the 10-day moving average of wOBA, by team. For example, if you wanted a graph of all the Twins' hitters starting on Opening Day:
+
+    rake parse[min,2011-04-01]
+
+Or, you can specify which players you care about:
+
+    rake parse[min,2011-04-01,"Joe Mauer:Justin Morneau:Jim Thome"]
 
 I then upload the CSV to Google Docs to generate a line chart, but you can do whatever you want with it.
