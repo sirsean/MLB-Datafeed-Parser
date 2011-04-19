@@ -33,10 +33,10 @@ task :download do
 end
 
 task :parse, :team, :start_date, :players do |t, args|
-    team = args["team"]
-    match = /(\d+)-(\d+)-(\d+)/.match(args["start_date"])
+    team = args[:team]
+    match = /(\d+)-(\d+)-(\d+)/.match(args[:start_date])
     start_date = Time.local(match[1], match[2], match[3])
-    players = args["players"].nil? ? nil : args["players"].split(":")
+    players = args[:players].nil? ? nil : args[:players].split(":")
 
     parser = MLB::Datafeed::Parser.new(team, start_date, players)
 
