@@ -24,6 +24,10 @@ module MLB
                 regex = /.*gid_(\d+)_(\d+)_(\d+)_.*/.match(game_id)
                 Time.local(regex[1].to_i, regex[2].to_i, regex[3].to_i)
             end
+
+            def latest_downloaded_date
+                known_game_ids.map{|game_id| date_by_game_id(game_id)}.sort.last
+            end
         end
     end
 end

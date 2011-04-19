@@ -1,6 +1,14 @@
 require "ftools"
 require "lib/mlb-datafeed"
 
+task :latest do
+    reader = MLB::Datafeed::LocalFileReader.new
+
+    latest = reader.latest_downloaded_date
+
+    puts latest.strftime("%Y-%m-%d")
+end
+
 task :download, :start_date, :end_date do |t, args|
     File.makedirs("xml")
 
