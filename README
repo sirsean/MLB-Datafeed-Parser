@@ -10,10 +10,10 @@ It will download every file that you don't already have, for the entire year (in
 
 Then you can process the XML files, creating a CSV with the 10-day moving average of wOBA, by team. For example, if you wanted a graph of all the Twins' hitters starting on Opening Day:
 
-    rake parse[min,2011-04-01]
+    rake parse_team[2011-04-01,min]
 
 Or, you can specify which players you care about:
 
-    rake parse[min,2011-04-01,"Joe Mauer:Justin Morneau:Jim Thome"]
+    rake parse_players[2011-04-01,"Joe Mauer:Justin Morneau:Jason Kubel:Miguel Cabrera:Albert Pujols"]
 
 I then upload the CSV to Google Docs to generate a line chart, but you can do whatever you want with it.

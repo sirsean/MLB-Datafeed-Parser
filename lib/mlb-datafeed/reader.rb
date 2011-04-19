@@ -4,12 +4,12 @@ module MLB
             def known_game_ids
                 regex = /xml\/(.+)\.xml/
                 Dir.glob("xml/*.xml").map do |filename|
-                    regex.match(filename)[1]
+                    MLB::Datafeed::Model::GameId.new(regex.match(filename)[1])
                 end
             end
 
             def local_filename(game_id)
-                "xml/" + game_id + ".xml"
+                "xml/" + game_id.gid + ".xml"
             end
 
             def file_contents(game_id)
@@ -20,13 +20,8 @@ module MLB
                 File.exists?(local_filename(game_id))
             end
 
-            def date_by_game_id(game_id)
-                regex = /.*gid_(\d+)_(\d+)_(\d+)_.*/.match(game_id)
-                Time.local(regex[1].to_i, regex[2].to_i, regex[3].to_i)
-            end
-
             def latest_downloaded_date
-                known_game_ids.map{|game_id| date_by_game_id(game_id)}.sort.last
+                known_game_ids.map{|game_id| game_id.date}.sort.last
             end
         end
     end

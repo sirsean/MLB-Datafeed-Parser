@@ -13,6 +13,23 @@ end
 module MLB
     module Datafeed
         module Model
+            class GameId
+                attr_reader :gid
+
+                def initialize(gid)
+                    @gid = gid
+                end
+
+                def date
+                    regex = /.*gid_(\d+)_(\d+)_(\d+)_.*/.match(@gid)
+                    Time.local(regex[1].to_i, regex[2].to_i, regex[3].to_i)
+                end
+
+                def has_team(team)
+                    not /.*_#{team}mlb_.*/.match(@gid).nil?
+                end
+            end
+
             class BatterGameScore
                 attr_reader :name, :date
                 def initialize(date, elem)
@@ -84,6 +101,34 @@ module MLB
                         @game_scores_by_date[date].send(field)
                     }
                     rcs.average
+                end
+            end
+
+            class BattersCollection
+                def initialize
+                    @batters = {}
+                end
+
+                def has_batter?(name)
+                    @batters.has_key?(name)
+                end
+
+                def [](name)
+                    @batters[name]
+                end
+
+                def []=(name, value)
+                    @batters[name] = value
+                end
+
+                def moving_average_grid(field, days)
+                    grid = MLB::Datafeed::Grid.new
+                    @batters.keys.each do |name|
+                        @batters[name].dates.each do |date|
+                            grid.set(name, date.strftime("%m/%d/%Y"), @batters[name].get_moving_average_on_date(field, date, days))
+                        end
+                    end
+                    return grid
                 end
             end
         end

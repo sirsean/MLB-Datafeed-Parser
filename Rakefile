@@ -32,25 +32,35 @@ task :download do
     end
 end
 
-task :parse, :team, :start_date, :players do |t, args|
+task :parse_team, :start_date, :team do |t, args|
     team = args[:team]
     match = /(\d+)-(\d+)-(\d+)/.match(args[:start_date])
     start_date = Time.local(match[1], match[2], match[3])
-    players = args[:players].nil? ? nil : args[:players].split(":")
 
-    parser = MLB::Datafeed::Parser.new(team, start_date, players)
+    parser = MLB::Datafeed::Parser.new(
+        :team => team,
+        :start_date => start_date
+    )
 
     batters = parser.parse
 
-    woba_moving_average_grid = MLB::Datafeed::Grid.new
-    batters.keys.each do |name|
-        batters[name].dates.each do |date|
-            woba_moving_average_grid.set(name, date.strftime("%m/%d/%Y"), batters[name].get_moving_average_on_date("woba", date, 10))
-        end
-    end
+    File.makedirs("output")
+    batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
+end
+
+task :parse_players, :start_date, :players do |t, args|
+    match = /(\d+)-(\d+)-(\d+)/.match(args[:start_date])
+    start_date = Time.local(match[1], match[2], match[3])
+    players = args[:players].split(":")
+
+    parser = MLB::Datafeed::Parser.new(
+        :start_date => start_date,
+        :players => players
+    )
+
+    batters = parser.parse
 
     File.makedirs("output")
-    csv_filename = "output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv"
-    woba_moving_average_grid.write_csv(csv_filename)
+    batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
 end
 

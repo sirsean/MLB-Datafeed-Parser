@@ -31,7 +31,7 @@ module MLB
                         doc = REXML::Document.new(resp.body)
                         doc.elements.each("html/body/ul/li/a"){ |elem|
                             if elem.attributes["href"] =~ /gid_.*/
-                                @game_ids << elem.attributes["href"].gsub("/", "")
+                                @game_ids << MLB::Datafeed::Model::GameId.new(elem.attributes["href"].gsub("/", ""))
                             end
                         }
                     }
@@ -44,12 +44,12 @@ module MLB
             end
 
             def remote_filename(game_id)
-                remote_base_path + game_id + "/boxscore.xml"
+                remote_base_path + game_id.gid + "/boxscore.xml"
             end
 
             def file_contents(game_id)
                 if @local_reader.game_known?(game_id)
-                    puts "Already downloaded: #{game_id}"
+                    puts "Already downloaded: #{game_id.gid}"
                     return @local_reader.file_contents(game_id)
                 else
                     puts "Downloading: #{game_id}"
