@@ -1,11 +1,22 @@
 require "ftools"
 require "lib/mlb-datafeed"
 
-task :download do
+task :download, :start_date, :end_date do |t, args|
     File.makedirs("xml")
 
-    start_date = Time.local(2011, 1, 1)
-    end_date = Time.now - 86400
+    date_regex = /(\d+)-(\d+)-(\d+)/
+    if args[:start_date].nil?
+        start_date = Time.local(Time.now.year, 1, 1)
+    else
+        match = date_regex.match(args[:start_date])
+        start_date = Time.local(match[1], match[2], match[3])
+    end
+    if args[:end_date].nil?
+        end_date = Time.now - 86400
+    else
+        match = date_regex.match(args[:end_date])
+        end_date = Time.local(match[1], match[2], match[3])
+    end
 
     current_date = start_date
     while current_date <= end_date
