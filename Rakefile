@@ -6,25 +6,18 @@ task :latest do
 
     latest = reader.latest_downloaded_date
 
-    puts latest.strftime("%Y-%m-%d")
+    puts latest.strftime("%Y-%m-%d") unless latest.nil?
 end
 
-task :download, :start_date, :end_date do |t, args|
+task :download do
     File.makedirs("xml")
 
-    date_regex = /(\d+)-(\d+)-(\d+)/
-    if args[:start_date].nil?
+    reader = MLB::Datafeed::LocalFileReader.new
+    start_date = reader.latest_downloaded_date + 86400
+    if start_date.nil?
         start_date = Time.local(Time.now.year, 1, 1)
-    else
-        match = date_regex.match(args[:start_date])
-        start_date = Time.local(match[1], match[2], match[3])
     end
-    if args[:end_date].nil?
-        end_date = Time.now - 86400
-    else
-        match = date_regex.match(args[:end_date])
-        end_date = Time.local(match[1], match[2], match[3])
-    end
+    end_date = Time.now - 86400
 
     current_date = start_date
     while current_date <= end_date
