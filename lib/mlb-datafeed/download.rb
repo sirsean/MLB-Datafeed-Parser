@@ -52,7 +52,7 @@ module MLB
                     puts "Already downloaded: #{game_id.gid}"
                     return @local_reader.file_contents(game_id)
                 else
-                    puts "Downloading: #{game_id}"
+                    puts "Downloading: #{game_id.gid}"
                     Net::HTTP.start("gd2.mlb.com") do |http|
                         resp = http.get(remote_filename(game_id))
                         if resp.code.to_s == 200.to_s
