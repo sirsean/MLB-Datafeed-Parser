@@ -1,3 +1,5 @@
+require "builder"
+
 module MLB
     module Datafeed
         class Grid
@@ -50,6 +52,33 @@ module MLB
                         file.write(row.join(",") + "\n")
                     }
                 }
+            end
+        end
+
+        class XmlOutput
+            def initialize
+                @batters = {}
+            end
+
+            def set(name, stats)
+                @batters[name] = stats
+            end
+
+            def write(filename)
+                puts "Writing XML to #{filename}"
+                xml = Builder::XmlMarkup.new
+                xml.batters do |batters|
+                    @batters.keys.each do |name|
+                        batters.batter(:name => name) do |b|
+                            @batters[name].each do |stat|
+                                b.stat(:date => stat[:date], :value => stat[:stat])
+                            end
+                        end
+                    end
+                end
+                open(filename, "wb") do |file|
+                    file.write(xml.target!)
+                end
             end
         end
     end

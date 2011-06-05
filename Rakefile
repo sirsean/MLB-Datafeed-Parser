@@ -35,10 +35,16 @@ task :download do
     end
 end
 
-task :parse_team, :start_date, :team do |t, args|
+task :parse_team, :start_date, :team, :type do |t, args|
     team = args[:team]
     match = /(\d+)-(\d+)-(\d+)/.match(args[:start_date])
     start_date = Time.local(match[1], match[2], match[3])
+    case args[:type]
+    when "xml"
+        type = :xml
+    else
+        type = :csv
+    end
 
     parser = MLB::Datafeed::Parser.new(
         :team => team,
@@ -48,13 +54,24 @@ task :parse_team, :start_date, :team do |t, args|
     batters = parser.parse
 
     File.makedirs("output")
-    batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
+    case type
+    when :csv
+        batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
+    when :xml
+        batters.moving_average_xml("woba", 10).write("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.xml")
+    end
 end
 
-task :parse_players, :start_date, :players do |t, args|
+task :parse_players, :start_date, :players, :type do |t, args|
     match = /(\d+)-(\d+)-(\d+)/.match(args[:start_date])
     start_date = Time.local(match[1], match[2], match[3])
     players = args[:players].split(":")
+    case args[:type]
+    when "xml"
+        type = :xml
+    else
+        type = :csv
+    end
 
     parser = MLB::Datafeed::Parser.new(
         :start_date => start_date,
@@ -64,6 +81,11 @@ task :parse_players, :start_date, :players do |t, args|
     batters = parser.parse
 
     File.makedirs("output")
-    batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
+    case type
+    when :csv
+        batters.moving_average_grid("woba", 10).write_csv("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.csv")
+    when :xml
+        batters.moving_average_xml("woba", 10).write("output/moving_average_#{Time.now.strftime("%Y-%m-%d_%H-%M-%S")}.xml")
+    end
 end
 

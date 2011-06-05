@@ -130,6 +130,18 @@ module MLB
                     end
                     return grid
                 end
+
+                def moving_average_xml(field, days)
+                    xml = MLB::Datafeed::XmlOutput.new
+                    @batters.keys.each do |name|
+                        stats = []
+                        @batters[name].dates.each do |date|
+                            stats << { :date => date.strftime("%m/%d/%Y"), :stat => @batters[name].get_moving_average_on_date(field, date, days) }
+                        end
+                        xml.set(name, stats)
+                    end
+                    return xml
+                end
             end
         end
     end
