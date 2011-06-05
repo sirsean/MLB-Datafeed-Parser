@@ -1,6 +1,8 @@
+require "rubygems"
 require "ftools"
 require "lib/mlb-datafeed"
 
+task :default => :latest
 task :latest do
     reader = MLB::Datafeed::LocalFileReader.new
 
@@ -13,7 +15,8 @@ task :download do
     File.makedirs("xml")
 
     reader = MLB::Datafeed::LocalFileReader.new
-    start_date = reader.latest_downloaded_date + 86400
+    latest_date = reader.latest_downloaded_date
+    start_date = latest_date + 86400 unless latest_date.nil?
     if start_date.nil?
         start_date = Time.local(Time.now.year, 1, 1)
     end
