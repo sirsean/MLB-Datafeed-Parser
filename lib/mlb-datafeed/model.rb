@@ -10,6 +10,14 @@ class Array
     end
 end
 
+class Float
+    alias_method :_orig_round, :round
+    def round(decimals=0)
+        factor = 10**decimals * 1.0
+        (self*factor)._orig_round / factor
+    end
+end
+
 module MLB
     module Datafeed
         module Model
@@ -100,7 +108,7 @@ module MLB
                     rcs = date_range.collect{ |date|
                         @game_scores_by_date[date].send(field)
                     }
-                    rcs.average
+                    rcs.average.round(3)
                 end
             end
 
